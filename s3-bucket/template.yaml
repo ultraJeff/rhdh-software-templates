@@ -202,8 +202,8 @@ spec:
   output:
     links:
       - title: AWS Console
-        url: ""
+        url: https://s3.console.aws.amazon.com/s3/buckets/${{ parameters.bucket_name }}?region=${{ parameters.region }}
         icon: cloud
       - title: Open Resource in Catalog
-        url: ""
+        url: /catalog/default/resource/${{ parameters.bucket_name }}
         icon: catalog

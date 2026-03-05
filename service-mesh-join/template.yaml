@@ -123,5 +123,5 @@ spec:
   output:
     links:
       - title: Application Namespace
-        url: ""
+        url: /catalog/default/component/${{ parameters.component_name }}
         icon: catalog

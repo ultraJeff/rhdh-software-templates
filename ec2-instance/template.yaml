@@ -187,8 +187,8 @@ spec:
   output:
     links:
       - title: AWS Console
-        url: ""
+        url: https://console.aws.amazon.com/ec2/home?region=${{ parameters.region }}
         icon: cloud
       - title: Open Resource in Catalog
-        url: ""
+        url: /catalog/default/resource/${{ parameters.instance_name }}
         icon: catalog

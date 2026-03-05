@@ -172,8 +172,8 @@ spec:
   output:
     links:
       - title: Source Code Repository
-        url: ""
+        url: https://github.com/${{ parameters.repo_owner }}/${{ parameters.app_name }}
         icon: github
       - title: Open Component in Catalog
-        url: ""
+        url: /catalog/default/component/${{ parameters.app_name }}
         icon: catalog
