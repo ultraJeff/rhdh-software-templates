@@ -1,0 +1,179 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: multi-cloud-app-launch
+  title: Multi-Cloud Application Launch
+  description: Deploy a containerized application across multiple cloud providers with unified management
+  tags:
+    - multi-cloud
+    - aws
+    - azure
+    - gcp
+    - kubernetes
+spec:
+  owner: platform-engineering
+  type: service
+  parameters:
+    - title: Application Details
+      required:
+        - app_name
+        - container_image
+      properties:
+        app_name:
+          title: Application Name
+          type: string
+          description: Name for the multi-cloud deployment
+          ui:field: EntityNamePicker
+          maxLength: 30
+        container_image:
+          title: Container Image
+          type: string
+          description: Fully qualified container image (e.g., quay.io/org/app:latest)
+        container_port:
+          title: Container Port
+          type: integer
+          description: Port the application listens on
+          default: 8080
+        description:
+          title: Description
+          type: string
+          description: Purpose of this multi-cloud deployment
+
+    - title: Cloud Providers
+      required:
+        - cloud_providers
+        - primary_region
+      properties:
+        cloud_providers:
+          title: Target Cloud Providers
+          type: array
+          description: Select one or more cloud providers to deploy to
+          uniqueItems: true
+          minItems: 1
+          items:
+            type: string
+            enum:
+              - aws
+              - azure
+              - gcp
+          ui:widget: checkboxes
+        primary_region:
+          title: Primary Region
+          type: string
+          description: Primary deployment region (cloud-specific naming)
+          default: us-east-1
+
+    - title: Scaling & Resources
+      properties:
+        replicas_per_cloud:
+          title: Replicas Per Cloud
+          type: integer
+          description: Number of replicas to run in each cloud provider
+          default: 2
+          minimum: 1
+          maximum: 10
+        cpu_request:
+          title: CPU Request
+          type: string
+          description: CPU resource request per replica
+          default: 250m
+        memory_request:
+          title: Memory Request
+          type: string
+          description: Memory resource request per replica
+          default: 256Mi
+
+    - title: Networking
+      properties:
+        load_balancing:
+          title: Load Balancing Strategy
+          type: string
+          description: How traffic is distributed across clouds
+          default: geo-proximity
+          enum:
+            - geo-proximity
+            - round-robin
+            - weighted
+            - failover
+        enable_global_dns:
+          title: Enable Global DNS
+          type: boolean
+          description: Configure a global DNS entry that routes across all clouds
+          default: true
+        health_check_path:
+          title: Health Check Path
+          type: string
+          description: HTTP path for health checks
+          default: /health
+
+    - title: Repository
+      required:
+        - repo_host
+        - repo_owner
+      properties:
+        repo_host:
+          title: Repository Host
+          type: string
+          default: github.com
+        repo_owner:
+          title: Repository Owner
+          type: string
+          description: GitHub organization or user
+
+  steps:
+    - id: log-inputs
+      name: Log Configuration
+      action: debug:log
+      input:
+        message: |
+          Multi-Cloud App Launch:
+            App: ${{ parameters.app_name }}
+            Image: ${{ parameters.container_image }}
+            Clouds: ${{ parameters.cloud_providers }}
+            Primary Region: ${{ parameters.primary_region }}
+            Replicas/Cloud: ${{ parameters.replicas_per_cloud }}
+            LB Strategy: ${{ parameters.load_balancing }}
+
+    # TODO: Generate Kubernetes manifests for each cloud provider
+    - id: generate-manifests
+      name: Generate Cloud Manifests
+      action: debug:log
+      input:
+        message: "TODO: Generate Deployment, Service, and Ingress manifests for each provider in ${{ parameters.cloud_providers }}"
+
+    # TODO: Create Terraform or Crossplane resources for multi-cloud infrastructure
+    - id: provision-infra
+      name: Provision Cloud Infrastructure
+      action: debug:log
+      input:
+        message: "TODO: Create Crossplane XRs or Terraform configs for clusters in ${{ parameters.cloud_providers }}"
+
+    # TODO: Configure global DNS and load balancing
+    - id: configure-networking
+      name: Configure Global Networking
+      action: debug:log
+      input:
+        message: "TODO: Set up global DNS with ${{ parameters.load_balancing }} strategy"
+
+    # TODO: Publish GitOps repo and create ArgoCD ApplicationSets
+    - id: publish
+      name: Publish GitOps Repository
+      action: debug:log
+      input:
+        message: "TODO: publish:github GitOps repo and create ArgoCD ApplicationSet targeting all clusters"
+
+    # TODO: Register in Backstage catalog
+    - id: register
+      name: Register in Catalog
+      action: debug:log
+      input:
+        message: "TODO: catalog:register the multi-cloud component"
+
+  output:
+    links:
+      - title: Source Code Repository
+        url: ""
+        icon: github
+      - title: Open Component in Catalog
+        url: ""
+        icon: catalog

@@ -1,0 +1,209 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: s3-bucket
+  title: Spin Up S3 Bucket
+  description: Provision an AWS S3 bucket with configurable access control, encryption, versioning, and lifecycle policies
+  tags:
+    - aws
+    - s3
+    - infrastructure
+    - storage
+spec:
+  owner: platform-engineering
+  type: infrastructure
+  parameters:
+    - title: Bucket Details
+      required:
+        - bucket_name
+        - region
+      properties:
+        bucket_name:
+          title: Bucket Name
+          type: string
+          description: Globally unique S3 bucket name
+          maxLength: 63
+          pattern: "^[a-z0-9][a-z0-9.-]*[a-z0-9]$"
+        region:
+          title: AWS Region
+          type: string
+          description: AWS region for the bucket
+          default: us-east-1
+          enum:
+            - us-east-1
+            - us-east-2
+            - us-west-1
+            - us-west-2
+            - eu-west-1
+            - eu-central-1
+            - ap-southeast-1
+            - ap-northeast-1
+        description:
+          title: Description
+          type: string
+          description: Purpose of this S3 bucket
+
+    - title: Access Control
+      properties:
+        access_control:
+          title: Access Control
+          type: string
+          description: Bucket-level access control
+          default: private
+          enum:
+            - private
+            - public-read
+            - authenticated-read
+        block_public_access:
+          title: Block All Public Access
+          type: boolean
+          description: Enable S3 Block Public Access settings
+          default: true
+        bucket_policy:
+          title: Bucket Policy Preset
+          type: string
+          description: Apply a predefined bucket policy
+          default: none
+          enum:
+            - none
+            - read-only-cross-account
+            - cloudfront-origin
+            - vpc-endpoint-only
+
+    - title: Data Protection
+      properties:
+        versioning:
+          title: Enable Versioning
+          type: boolean
+          description: Keep multiple versions of objects
+          default: false
+        encryption:
+          title: Encryption Type
+          type: string
+          description: Server-side encryption method
+          default: AES-256
+          enum:
+            - AES-256
+            - aws:kms
+        kms_key_id:
+          title: KMS Key ID
+          type: string
+          description: Custom KMS key ARN (only for aws:kms encryption)
+        replication:
+          title: Enable Cross-Region Replication
+          type: boolean
+          description: Replicate objects to a bucket in another region
+          default: false
+        replication_region:
+          title: Replication Target Region
+          type: string
+          description: Region for the replica bucket (if replication enabled)
+          enum:
+            - us-east-1
+            - us-east-2
+            - us-west-2
+            - eu-west-1
+
+    - title: Lifecycle & Monitoring
+      properties:
+        lifecycle_rules:
+          title: Enable Lifecycle Rules
+          type: boolean
+          description: Automatically transition or expire objects
+          default: false
+        transition_days:
+          title: Transition to Glacier After (days)
+          type: integer
+          description: Move objects to Glacier storage after this many days
+          default: 90
+          minimum: 1
+        expiration_days:
+          title: Expire Objects After (days)
+          type: integer
+          description: Permanently delete objects after this many days (0 = never)
+          default: 0
+          minimum: 0
+        enable_logging:
+          title: Enable Access Logging
+          type: boolean
+          description: Log all requests to the bucket
+          default: false
+
+    - title: Tags & Metadata
+      properties:
+        environment:
+          title: Environment
+          type: string
+          default: development
+          enum:
+            - development
+            - staging
+            - production
+        cost_center:
+          title: Cost Center
+          type: string
+          description: Cost center tag for billing
+        owner_email:
+          title: Owner Email
+          type: string
+          description: Email of the bucket owner
+
+  steps:
+    - id: log-inputs
+      name: Log Configuration
+      action: debug:log
+      input:
+        message: |
+          S3 Bucket Request:
+            Name: ${{ parameters.bucket_name }}
+            Region: ${{ parameters.region }}
+            Access: ${{ parameters.access_control }}
+            Block Public: ${{ parameters.block_public_access }}
+            Versioning: ${{ parameters.versioning }}
+            Encryption: ${{ parameters.encryption }}
+            Lifecycle: ${{ parameters.lifecycle_rules }}
+            Environment: ${{ parameters.environment }}
+
+    # TODO: Create Terraform/Crossplane resource to provision the S3 bucket
+    - id: provision-bucket
+      name: Provision S3 Bucket
+      action: debug:log
+      input:
+        message: "TODO: Apply Terraform plan or Crossplane Claim for S3 bucket ${{ parameters.bucket_name }} in ${{ parameters.region }}"
+
+    # TODO: Configure encryption and access policies
+    - id: configure-security
+      name: Configure Security
+      action: debug:log
+      input:
+        message: "TODO: Apply encryption (${{ parameters.encryption }}), access control (${{ parameters.access_control }}), and bucket policy (${{ parameters.bucket_policy }})"
+
+    # TODO: Configure versioning and lifecycle rules
+    - id: configure-lifecycle
+      name: Configure Lifecycle
+      action: debug:log
+      input:
+        message: "TODO: Enable versioning=${{ parameters.versioning }}, lifecycle=${{ parameters.lifecycle_rules }}, transition=${{ parameters.transition_days }}d, expiration=${{ parameters.expiration_days }}d"
+
+    # TODO: Set up replication if enabled
+    - id: configure-replication
+      name: Configure Replication
+      action: debug:log
+      input:
+        message: "TODO: Configure cross-region replication to ${{ parameters.replication_region }} (enabled=${{ parameters.replication }})"
+
+    # TODO: Register the bucket as a Backstage Resource entity
+    - id: register
+      name: Register in Catalog
+      action: debug:log
+      input:
+        message: "TODO: catalog:register S3 bucket as a Resource entity"
+
+  output:
+    links:
+      - title: AWS Console
+        url: ""
+        icon: cloud
+      - title: Open Resource in Catalog
+        url: ""
+        icon: catalog

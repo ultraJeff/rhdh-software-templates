@@ -1,0 +1,13 @@
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: rhdh-software-templates
+  description: Custom software templates for Red Hat Developer Hub
+spec:
+  type: url
+  targets:
+    - ./service-mesh-join/template.yaml
+    - ./camel-adapter/template.yaml
+    - ./multi-cloud-app/template.yaml
+    - ./ec2-instance/template.yaml
+    - ./s3-bucket/template.yaml

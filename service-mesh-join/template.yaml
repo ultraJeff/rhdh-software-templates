@@ -1,0 +1,127 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: service-mesh-join
+  title: Join OpenShift Service Mesh
+  description: Onboard an existing application or namespace into an OpenShift Service Mesh control plane
+  tags:
+    - openshift
+    - service-mesh
+    - istio
+    - networking
+spec:
+  owner: platform-engineering
+  type: infrastructure
+  parameters:
+    - title: Application Details
+      required:
+        - component_name
+        - namespace
+      properties:
+        component_name:
+          title: Component Name
+          type: string
+          description: Name of the application to join to the mesh
+          ui:field: EntityNamePicker
+        namespace:
+          title: Application Namespace
+          type: string
+          description: OpenShift namespace where the application is deployed
+        description:
+          title: Description
+          type: string
+          description: Why this application is joining the mesh
+
+    - title: Service Mesh Configuration
+      required:
+        - control_plane_namespace
+        - mtls_mode
+      properties:
+        control_plane_namespace:
+          title: Control Plane Namespace
+          type: string
+          description: Namespace where the Service Mesh control plane is installed
+          default: istio-system
+        mtls_mode:
+          title: mTLS Mode
+          type: string
+          description: Mutual TLS enforcement mode
+          default: PERMISSIVE
+          enum:
+            - STRICT
+            - PERMISSIVE
+        sidecar_injection:
+          title: Sidecar Injection
+          type: string
+          description: How Envoy sidecar proxies are injected into pods
+          default: auto
+          enum:
+            - auto
+            - manual
+        expose_gateway:
+          title: Expose via Ingress Gateway
+          type: boolean
+          description: Create a VirtualService and Gateway to expose the application externally
+          default: false
+
+    - title: Traffic Policy
+      properties:
+        circuit_breaker:
+          title: Enable Circuit Breaker
+          type: boolean
+          description: Add a DestinationRule with circuit breaker settings
+          default: false
+        rate_limit:
+          title: Requests Per Second Limit
+          type: integer
+          description: Rate limit for inbound requests (0 = unlimited)
+          default: 0
+          minimum: 0
+
+  steps:
+    - id: log-inputs
+      name: Log Configuration
+      action: debug:log
+      input:
+        message: |
+          Service Mesh Join Request:
+            Component: ${{ parameters.component_name }}
+            Namespace: ${{ parameters.namespace }}
+            Control Plane: ${{ parameters.control_plane_namespace }}
+            mTLS: ${{ parameters.mtls_mode }}
+            Sidecar Injection: ${{ parameters.sidecar_injection }}
+            Expose Gateway: ${{ parameters.expose_gateway }}
+
+    # TODO: Add namespace to ServiceMeshMemberRoll or create ServiceMeshMember CR
+    - id: join-mesh
+      name: Join Service Mesh
+      action: debug:log
+      input:
+        message: "TODO: Create ServiceMeshMember CR to join ${{ parameters.namespace }} to mesh in ${{ parameters.control_plane_namespace }}"
+
+    # TODO: Apply sidecar injection annotation to namespace or deployments
+    - id: configure-sidecar
+      name: Configure Sidecar Injection
+      action: debug:log
+      input:
+        message: "TODO: Annotate namespace ${{ parameters.namespace }} with sidecar.istio.io/inject=${{ parameters.sidecar_injection }}"
+
+    # TODO: Create PeerAuthentication for mTLS
+    - id: configure-mtls
+      name: Configure mTLS Policy
+      action: debug:log
+      input:
+        message: "TODO: Create PeerAuthentication with mtls mode ${{ parameters.mtls_mode }}"
+
+    # TODO: Optionally create Gateway + VirtualService
+    - id: expose-gateway
+      name: Expose via Gateway
+      action: debug:log
+      input:
+        message: "TODO: Create Gateway and VirtualService for ${{ parameters.component_name }} (expose=${{ parameters.expose_gateway }})"
+
+  output:
+    links:
+      - title: Application Namespace
+        url: ""
+        icon: catalog

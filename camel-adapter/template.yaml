@@ -1,0 +1,170 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: camel-adapter
+  title: Camel Integration Adapter
+  description: Scaffold a Camel Quarkus integration adapter to bridge systems using various protocols
+  tags:
+    - camel
+    - integration
+    - quarkus
+    - middleware
+spec:
+  owner: platform-engineering
+  type: service
+  parameters:
+    - title: Adapter Details
+      required:
+        - adapter_name
+        - namespace
+      properties:
+        adapter_name:
+          title: Adapter Name
+          type: string
+          description: Unique name for this integration adapter
+          ui:field: EntityNamePicker
+          maxLength: 30
+        namespace:
+          title: Target Namespace
+          type: string
+          description: OpenShift namespace to deploy the adapter into
+        description:
+          title: Description
+          type: string
+          description: What systems does this adapter connect?
+
+    - title: Source Configuration
+      required:
+        - source_protocol
+      properties:
+        source_protocol:
+          title: Source Protocol
+          type: string
+          description: Protocol used to consume from the source system
+          enum:
+            - rest
+            - soap
+            - kafka
+            - amqp
+            - ftp
+            - timer
+            - file
+        source_endpoint:
+          title: Source Endpoint
+          type: string
+          description: Connection URL or topic name for the source system
+
+    - title: Target Configuration
+      required:
+        - target_protocol
+      properties:
+        target_protocol:
+          title: Target Protocol
+          type: string
+          description: Protocol used to produce to the target system
+          enum:
+            - rest
+            - soap
+            - kafka
+            - amqp
+            - jdbc
+            - log
+        target_endpoint:
+          title: Target Endpoint
+          type: string
+          description: Connection URL or topic name for the target system
+
+    - title: Data & Error Handling
+      required:
+        - data_format
+      properties:
+        data_format:
+          title: Data Format
+          type: string
+          description: Message payload format
+          default: json
+          enum:
+            - json
+            - xml
+            - csv
+            - avro
+        error_strategy:
+          title: Error Handling Strategy
+          type: string
+          description: How to handle message processing failures
+          default: dead-letter-queue
+          enum:
+            - dead-letter-queue
+            - retry-with-backoff
+            - log-and-continue
+            - circuit-breaker
+        max_retries:
+          title: Max Retries
+          type: integer
+          description: Number of retry attempts before error handling kicks in
+          default: 3
+          minimum: 0
+          maximum: 10
+
+    - title: Repository
+      required:
+        - repo_host
+        - repo_owner
+      properties:
+        repo_host:
+          title: Repository Host
+          type: string
+          default: github.com
+        repo_owner:
+          title: Repository Owner
+          type: string
+          description: GitHub organization or user
+
+  steps:
+    - id: log-inputs
+      name: Log Configuration
+      action: debug:log
+      input:
+        message: |
+          Camel Adapter Request:
+            Name: ${{ parameters.adapter_name }}
+            Source: ${{ parameters.source_protocol }} -> ${{ parameters.target_protocol }}
+            Data Format: ${{ parameters.data_format }}
+            Error Strategy: ${{ parameters.error_strategy }}
+
+    # TODO: Fetch a Camel Quarkus skeleton with route template
+    - id: fetch-skeleton
+      name: Fetch Camel Quarkus Skeleton
+      action: debug:log
+      input:
+        message: "TODO: fetch:template with Camel Quarkus project skeleton, route from ${{ parameters.source_protocol }} to ${{ parameters.target_protocol }}"
+
+    # TODO: Publish the generated source to a git repo
+    - id: publish
+      name: Publish to Repository
+      action: debug:log
+      input:
+        message: "TODO: publish:github to ${{ parameters.repo_owner }}/${{ parameters.adapter_name }}"
+
+    # TODO: Register the component in the Backstage catalog
+    - id: register
+      name: Register in Catalog
+      action: debug:log
+      input:
+        message: "TODO: catalog:register from the published repo"
+
+    # TODO: Create GitOps deployment resources and ArgoCD Application
+    - id: deploy
+      name: Create Deployment Resources
+      action: debug:log
+      input:
+        message: "TODO: Create Kubernetes manifests and ArgoCD Application for namespace ${{ parameters.namespace }}"
+
+  output:
+    links:
+      - title: Source Code Repository
+        url: ""
+        icon: github
+      - title: Open Component in Catalog
+        url: ""
+        icon: catalog

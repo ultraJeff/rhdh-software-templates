@@ -1,0 +1,194 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: ec2-instance
+  title: Spin Up EC2 Instance
+  description: Provision an AWS EC2 instance with configurable instance type, AMI, networking, and storage
+  tags:
+    - aws
+    - ec2
+    - infrastructure
+    - compute
+spec:
+  owner: platform-engineering
+  type: infrastructure
+  parameters:
+    - title: Instance Details
+      required:
+        - instance_name
+        - instance_type
+        - ami
+      properties:
+        instance_name:
+          title: Instance Name
+          type: string
+          description: Name tag for the EC2 instance
+          ui:field: EntityNamePicker
+          maxLength: 40
+        instance_type:
+          title: Instance Type
+          type: string
+          description: EC2 instance type
+          default: t3.micro
+          enum:
+            - t3.micro
+            - t3.small
+            - t3.medium
+            - t3.large
+            - m5.large
+            - m5.xlarge
+            - m5.2xlarge
+            - c5.large
+            - c5.xlarge
+            - r5.large
+        ami:
+          title: AMI / Operating System
+          type: string
+          description: Base operating system image
+          default: amazon-linux-2023
+          enum:
+            - amazon-linux-2023
+            - rhel-9
+            - ubuntu-24.04
+            - windows-server-2022
+        description:
+          title: Description
+          type: string
+          description: Purpose of this EC2 instance
+
+    - title: Networking
+      required:
+        - region
+      properties:
+        region:
+          title: AWS Region
+          type: string
+          description: AWS region to launch the instance in
+          default: us-east-1
+          enum:
+            - us-east-1
+            - us-east-2
+            - us-west-1
+            - us-west-2
+            - eu-west-1
+            - eu-central-1
+            - ap-southeast-1
+            - ap-northeast-1
+        vpc_id:
+          title: VPC ID
+          type: string
+          description: VPC to launch into (leave blank for default VPC)
+        subnet_id:
+          title: Subnet ID
+          type: string
+          description: Subnet to launch into (leave blank for auto-select)
+        assign_public_ip:
+          title: Assign Public IP
+          type: boolean
+          description: Assign a public IPv4 address
+          default: false
+        security_group_ids:
+          title: Security Group IDs
+          type: string
+          description: Comma-separated list of security group IDs
+
+    - title: Storage & Access
+      properties:
+        storage_size_gb:
+          title: Root Volume Size (GB)
+          type: integer
+          description: Size of the root EBS volume in GB
+          default: 20
+          minimum: 8
+          maximum: 1000
+        storage_type:
+          title: Volume Type
+          type: string
+          description: EBS volume type
+          default: gp3
+          enum:
+            - gp3
+            - gp2
+            - io1
+            - io2
+            - st1
+        key_pair_name:
+          title: SSH Key Pair Name
+          type: string
+          description: Name of an existing EC2 key pair for SSH access
+        iam_role:
+          title: IAM Instance Profile
+          type: string
+          description: IAM role to attach to the instance
+
+    - title: Tags & Metadata
+      properties:
+        environment:
+          title: Environment
+          type: string
+          default: development
+          enum:
+            - development
+            - staging
+            - production
+        cost_center:
+          title: Cost Center
+          type: string
+          description: Cost center tag for billing
+        owner_email:
+          title: Owner Email
+          type: string
+          description: Email of the instance owner
+          ui:field: EntityNamePicker
+
+  steps:
+    - id: log-inputs
+      name: Log Configuration
+      action: debug:log
+      input:
+        message: |
+          EC2 Instance Request:
+            Name: ${{ parameters.instance_name }}
+            Type: ${{ parameters.instance_type }}
+            AMI: ${{ parameters.ami }}
+            Region: ${{ parameters.region }}
+            Storage: ${{ parameters.storage_size_gb }}GB (${{ parameters.storage_type }})
+            Public IP: ${{ parameters.assign_public_ip }}
+            Environment: ${{ parameters.environment }}
+
+    # TODO: Create Terraform/Crossplane resource to provision the EC2 instance
+    - id: provision-instance
+      name: Provision EC2 Instance
+      action: debug:log
+      input:
+        message: "TODO: Apply Terraform plan or Crossplane Claim for EC2 ${{ parameters.instance_type }} in ${{ parameters.region }}"
+
+    # TODO: Configure security groups and networking
+    - id: configure-networking
+      name: Configure Networking
+      action: debug:log
+      input:
+        message: "TODO: Attach security groups ${{ parameters.security_group_ids }} and configure VPC ${{ parameters.vpc_id }}"
+
+    # TODO: Apply tags and metadata
+    - id: apply-tags
+      name: Apply Tags
+      action: debug:log
+      input:
+        message: "TODO: Tag instance with Name=${{ parameters.instance_name }}, Environment=${{ parameters.environment }}, CostCenter=${{ parameters.cost_center }}"
+
+    # TODO: Register the instance as a Backstage Resource entity
+    - id: register
+      name: Register in Catalog
+      action: debug:log
+      input:
+        message: "TODO: catalog:register EC2 instance as a Resource entity"
+
+  output:
+    links:
+      - title: AWS Console
+        url: ""
+        icon: cloud
+      - title: Open Resource in Catalog
+        url: ""
+        icon: catalog
