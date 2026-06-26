@@ -19,6 +19,7 @@ spec:
       required:
         - name
         - owner
+        - ghOwner
       properties:
         name:
           title: Name
@@ -43,12 +44,6 @@ spec:
           ui:options:
             catalogFilter:
               kind: [Group, User]
-
-    - title: Repository Information
-      required:
-        - repoName
-        - ghOwner
-      properties:
         ghOwner:
           title: GitHub Organization
           type: string
@@ -57,7 +52,7 @@ spec:
         repoName:
           title: Repository Name
           type: string
-          ui:help: 'A gitops repo will also be created with the suffix -gitops'
+          ui:help: 'Leave blank to use the app name. A gitops repo will also be created with the suffix -gitops'
         ghHost:
           title: GitHub Host
           type: string
@@ -67,8 +62,6 @@ spec:
       required:
         - imageRegistry
         - imageOrg
-        - imageName
-        - namespace
       properties:
         imageRegistry:
           title: Image Registry
@@ -83,12 +76,11 @@ spec:
         imageName:
           title: Image Name
           type: string
-          ui:help: Name for the container image
+          ui:help: Leave blank to use the app name
         namespace:
           title: Deployment Namespace
           type: string
-          default: astro-app
-          ui:help: OpenShift namespace for deployment
+          ui:help: Leave blank to use the app name
 
   steps:
     - id: fetch-source
@@ -101,14 +93,14 @@ spec:
           name: ${{ parameters.name }}
           description: ${{ parameters.description }}
           owner: ${{ parameters.owner }}
-          repoName: ${{ parameters.repoName }}
+          repoName: ${{ parameters.repoName if parameters.repoName else parameters.name }}
           ghOwner: ${{ parameters.ghOwner }}
           ghHost: ${{ parameters.ghHost }}
           imageRegistry: ${{ parameters.imageRegistry }}
           imageOrg: ${{ parameters.imageOrg }}
-          imageName: ${{ parameters.imageName }}
-          namespace: ${{ parameters.namespace }}
-          image: ${{ parameters.imageRegistry }}/${{ parameters.imageOrg }}/${{ parameters.imageName }}
+          imageName: ${{ parameters.imageName if parameters.imageName else parameters.name }}
+          namespace: ${{ parameters.namespace if parameters.namespace else parameters.name }}
+          image: ${{ parameters.imageRegistry }}/${{ parameters.imageOrg }}/${{ parameters.imageName if parameters.imageName else parameters.name }}
 
     - id: fetch-gitops
       name: Fetch GitOps Skeleton
@@ -118,11 +110,11 @@ spec:
         targetPath: gitops
         values:
           name: ${{ parameters.name }}
-          repoName: ${{ parameters.repoName }}
+          repoName: ${{ parameters.repoName if parameters.repoName else parameters.name }}
           ghOwner: ${{ parameters.ghOwner }}
           ghHost: ${{ parameters.ghHost }}
-          namespace: ${{ parameters.namespace }}
-          image: ${{ parameters.imageRegistry }}/${{ parameters.imageOrg }}/${{ parameters.imageName }}
+          namespace: ${{ parameters.namespace if parameters.namespace else parameters.name }}
+          image: ${{ parameters.imageRegistry }}/${{ parameters.imageOrg }}/${{ parameters.imageName if parameters.imageName else parameters.name }}
 
     - id: publish-source
       name: Publish Source Repository
@@ -130,7 +122,7 @@ spec:
       input:
         sourcePath: source
         description: '${{ parameters.description }}'
-        repoUrl: ${{ parameters.ghHost }}?owner=${{ parameters.ghOwner }}&repo=${{ parameters.repoName }}
+        repoUrl: ${{ parameters.ghHost }}?owner=${{ parameters.ghOwner }}&repo=${{ parameters.repoName if parameters.repoName else parameters.name }}
         defaultBranch: main
         protectDefaultBranch: false
         repoVisibility: public
@@ -141,7 +133,7 @@ spec:
       input:
         sourcePath: gitops
         description: 'GitOps manifests for ${{ parameters.name }}'
-        repoUrl: ${{ parameters.ghHost }}?owner=${{ parameters.ghOwner }}&repo=${{ parameters.repoName }}-gitops
+        repoUrl: ${{ parameters.ghHost }}?owner=${{ parameters.ghOwner }}&repo=${{ (parameters.repoName if parameters.repoName else parameters.name) + '-gitops' }}
         defaultBranch: main
         protectDefaultBranch: false
         repoVisibility: public
@@ -159,7 +151,7 @@ spec:
         appName: ${{ parameters.name }}
         argoInstance: argocd
         namespace: openshift-gitops
-        repoUrl: https://${{ parameters.ghHost }}/${{ parameters.ghOwner }}/${{ parameters.repoName }}-gitops.git
+        repoUrl: https://${{ parameters.ghHost }}/${{ parameters.ghOwner }}/${{ (parameters.repoName if parameters.repoName else parameters.name) + '-gitops' }}.git
         path: ./k8s/overlays/development
 
     - id: register-source
