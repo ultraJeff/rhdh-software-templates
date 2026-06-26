@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${{ values.name }}
+  namespace: ${{ values.namespace }}
+  labels:
+    app: ${{ values.name }}
+    app.kubernetes.io/name: ${{ values.name }}
+    app.kubernetes.io/instance: ${{ values.name }}
+    app.kubernetes.io/part-of: ${{ values.name }}
+    backstage.io/kubernetes-id: ${{ values.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ${{ values.name }}
+  template:
+    metadata:
+      labels:
+        app: ${{ values.name }}
+        app.kubernetes.io/name: ${{ values.name }}
+        app.kubernetes.io/instance: ${{ values.name }}
+        backstage.io/kubernetes-id: ${{ values.name }}
+    spec:
+      containers:
+        - name: ${{ values.name }}
+          image: ${{ values.image }}:latest
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi

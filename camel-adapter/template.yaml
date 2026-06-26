@@ -4,6 +4,8 @@ metadata:
   name: camel-adapter
   title: Camel Integration Adapter
   description: Scaffold a Camel Quarkus integration adapter to bridge systems using various protocols
+  annotations:
+    backstage.io/source-location: url:https://github.com/ultraJeff/rhdh-software-templates/blob/main/camel-adapter/template.yaml
   tags:
     - camel
     - integration

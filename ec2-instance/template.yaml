@@ -4,6 +4,8 @@ metadata:
   name: ec2-instance
   title: Spin Up EC2 Instance
   description: Provision an AWS EC2 instance with configurable instance type, AMI, networking, and storage
+  annotations:
+    backstage.io/source-location: url:https://github.com/ultraJeff/rhdh-software-templates/blob/main/ec2-instance/template.yaml
   tags:
     - aws
     - ec2

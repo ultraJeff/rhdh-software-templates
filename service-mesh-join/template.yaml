@@ -4,6 +4,8 @@ metadata:
   name: service-mesh-join
   title: Join OpenShift Service Mesh
   description: Onboard an existing application or namespace into an OpenShift Service Mesh control plane
+  annotations:
+    backstage.io/source-location: url:https://github.com/ultraJeff/rhdh-software-templates/blob/main/service-mesh-join/template.yaml
   tags:
     - openshift
     - service-mesh

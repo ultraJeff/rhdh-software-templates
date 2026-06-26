@@ -1,0 +1,192 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: astro-app
+  title: Astro Application
+  description: Scaffold an Astro JS static site with Tekton CI, ArgoCD GitOps deployment, and Dev Spaces support on OpenShift
+  annotations:
+    backstage.io/source-location: url:https://github.com/ultraJeff/rhdh-software-templates/blob/main/astro-app/template.yaml
+  tags:
+    - astro
+    - javascript
+    - frontend
+    - openshift
+spec:
+  owner: platform-engineering
+  type: service
+  parameters:
+    - title: Application Information
+      required:
+        - name
+        - owner
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Unique name of the component
+          ui:autofocus: true
+          ui:field: EntityNamePicker
+          maxLength: 63
+          pattern: '^[a-z]([-a-z0-9]*[a-z0-9])?$'
+          ui:help: 'Lowercase letters, digits, and hyphens only (RFC 1123). Example: my-astro-site'
+        description:
+          title: Description
+          type: string
+          description: A short description of the application
+          default: An Astro JS static site deployed on OpenShift
+        owner:
+          title: Owner
+          type: string
+          description: Owner of the component
+          default: user:default/admin
+          ui:field: OwnerPicker
+          ui:options:
+            catalogFilter:
+              kind: [Group, User]
+
+    - title: Repository Information
+      required:
+        - repoName
+        - ghOwner
+      properties:
+        ghOwner:
+          title: GitHub Organization
+          type: string
+          default: ultraJeff
+          ui:help: The GitHub organization or user that will own the repositories
+        repoName:
+          title: Repository Name
+          type: string
+          ui:help: 'A gitops repo will also be created with the suffix -gitops'
+        ghHost:
+          title: GitHub Host
+          type: string
+          default: github.com
+
+    - title: Deployment Information
+      required:
+        - imageRegistry
+        - imageOrg
+        - imageName
+        - namespace
+      properties:
+        imageRegistry:
+          title: Image Registry
+          type: string
+          default: quay.io
+          ui:help: Container image registry host
+        imageOrg:
+          title: Image Organization
+          type: string
+          default: ultraJeff
+          ui:help: Organization or user on the registry
+        imageName:
+          title: Image Name
+          type: string
+          ui:help: Name for the container image
+        namespace:
+          title: Deployment Namespace
+          type: string
+          default: astro-app
+          ui:help: OpenShift namespace for deployment
+
+  steps:
+    - id: fetch-source
+      name: Fetch Source Skeleton
+      action: fetch:template
+      input:
+        url: ./content
+        targetPath: source
+        values:
+          name: ${{ parameters.name }}
+          description: ${{ parameters.description }}
+          owner: ${{ parameters.owner }}
+          repoName: ${{ parameters.repoName }}
+          ghOwner: ${{ parameters.ghOwner }}
+          ghHost: ${{ parameters.ghHost }}
+          imageRegistry: ${{ parameters.imageRegistry }}
+          imageOrg: ${{ parameters.imageOrg }}
+          imageName: ${{ parameters.imageName }}
+          namespace: ${{ parameters.namespace }}
+          image: ${{ parameters.imageRegistry }}/${{ parameters.imageOrg }}/${{ parameters.imageName }}
+
+    - id: fetch-gitops
+      name: Fetch GitOps Skeleton
+      action: fetch:template
+      input:
+        url: ./gitops
+        targetPath: gitops
+        values:
+          name: ${{ parameters.name }}
+          repoName: ${{ parameters.repoName }}
+          ghOwner: ${{ parameters.ghOwner }}
+          ghHost: ${{ parameters.ghHost }}
+          namespace: ${{ parameters.namespace }}
+          image: ${{ parameters.imageRegistry }}/${{ parameters.imageOrg }}/${{ parameters.imageName }}
+
+    - id: publish-source
+      name: Publish Source Repository
+      action: publish:github
+      input:
+        sourcePath: source
+        description: '${{ parameters.description }}'
+        repoUrl: ${{ parameters.ghHost }}?owner=${{ parameters.ghOwner }}&repo=${{ parameters.repoName }}
+        defaultBranch: main
+        protectDefaultBranch: false
+        repoVisibility: public
+
+    - id: publish-gitops
+      name: Publish GitOps Repository
+      action: publish:github
+      input:
+        sourcePath: gitops
+        description: 'GitOps manifests for ${{ parameters.name }}'
+        repoUrl: ${{ parameters.ghHost }}?owner=${{ parameters.ghOwner }}&repo=${{ parameters.repoName }}-gitops
+        defaultBranch: main
+        protectDefaultBranch: false
+        repoVisibility: public
+
+    - id: wait-for-repos
+      name: Wait for Repository Availability
+      action: debug:wait
+      input:
+        seconds: 3
+
+    - id: create-argocd-resources
+      name: Create ArgoCD Resources
+      action: argocd:create-resources
+      input:
+        appName: ${{ parameters.name }}
+        argoInstance: argocd
+        namespace: openshift-gitops
+        repoUrl: https://${{ parameters.ghHost }}/${{ parameters.ghOwner }}/${{ parameters.repoName }}-gitops.git
+        path: ./k8s/overlays/development
+
+    - id: register-source
+      name: Register Source Component
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps['publish-source'].output.repoContentsUrl }}
+        catalogInfoPath: /catalog-info.yaml
+
+    - id: register-gitops
+      name: Register GitOps Component
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps['publish-gitops'].output.repoContentsUrl }}
+        catalogInfoPath: /catalog-info.yaml
+
+  output:
+    links:
+      - title: Source Repository
+        url: ${{ steps['publish-source'].output.remoteUrl }}
+        icon: github
+      - title: GitOps Repository
+        url: ${{ steps['publish-gitops'].output.remoteUrl }}
+        icon: github
+      - title: Open Component in Catalog
+        icon: catalog
+        entityRef: ${{ steps['register-source'].output.entityRef }}
+      - title: Open GitOps Resource in Catalog
+        icon: catalog
+        entityRef: ${{ steps['register-gitops'].output.entityRef }}

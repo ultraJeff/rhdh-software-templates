@@ -1,0 +1,44 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="${{ values.name }}">
+  <main>
+    <h1>${{ values.name }}</h1>
+    <p>${{ values.description }}</p>
+    <div class="badges">
+      <span class="badge">Astro</span>
+      <span class="badge">OpenShift</span>
+      <span class="badge">Tekton CI</span>
+      <span class="badge">ArgoCD</span>
+    </div>
+    <p class="subtle">Scaffolded by <a href="https://developers.redhat.com/rhdh">Red Hat Developer Hub</a></p>
+  </main>
+</Layout>
+
+<style>
+  main {
+    text-align: center;
+    padding: 2rem;
+  }
+  h1 {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+  }
+  .badges {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin: 1.5rem 0;
+  }
+  .badge {
+    background: #393939;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.85rem;
+  }
+  .subtle {
+    color: var(--subtle);
+    font-size: 0.9rem;
+  }
+</style>

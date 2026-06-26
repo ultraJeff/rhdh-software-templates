@@ -6,6 +6,7 @@ metadata:
 spec:
   type: url
   targets:
+    - ./astro-app/template.yaml
     - ./service-mesh-join/template.yaml
     - ./camel-adapter/template.yaml
     - ./multi-cloud-app/template.yaml

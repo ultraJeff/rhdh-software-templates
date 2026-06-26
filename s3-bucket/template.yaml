@@ -4,6 +4,8 @@ metadata:
   name: s3-bucket
   title: Spin Up S3 Bucket
   description: Provision an AWS S3 bucket with configurable access control, encryption, versioning, and lifecycle policies
+  annotations:
+    backstage.io/source-location: url:https://github.com/ultraJeff/rhdh-software-templates/blob/main/s3-bucket/template.yaml
   tags:
     - aws
     - s3

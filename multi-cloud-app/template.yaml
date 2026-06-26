@@ -4,6 +4,8 @@ metadata:
   name: multi-cloud-app-launch
   title: Multi-Cloud Application Launch
   description: Deploy a containerized application across multiple cloud providers with unified management
+  annotations:
+    backstage.io/source-location: url:https://github.com/ultraJeff/rhdh-software-templates/blob/main/multi-cloud-app/template.yaml
   tags:
     - multi-cloud
     - aws

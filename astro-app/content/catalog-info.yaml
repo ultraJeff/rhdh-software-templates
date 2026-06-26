@@ -1,0 +1,23 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ${{ values.name }}
+  description: ${{ values.description }}
+  annotations:
+    backstage.io/source-location: url:https://${{ values.ghHost }}/${{ values.ghOwner }}/${{ values.repoName }}
+    backstage.io/kubernetes-id: ${{ values.name }}
+    janus-idp.io/tekton: ${{ values.name }}
+    argocd/app-selector: app.kubernetes.io/instance=${{ values.name }}
+  links:
+    - url: https://devspaces.apps.tallgeese.ultra.lab/#https://${{ values.ghHost }}/${{ values.ghOwner }}/${{ values.repoName }}
+      title: Open in Dev Spaces
+      icon: catalog
+      type: ide
+  tags:
+    - astro
+    - javascript
+    - frontend
+spec:
+  type: service
+  owner: ${{ values.owner }}
+  lifecycle: experimental

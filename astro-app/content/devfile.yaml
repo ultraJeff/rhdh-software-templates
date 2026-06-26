@@ -1,0 +1,51 @@
+schemaVersion: 2.2.0
+metadata:
+  name: ${{ values.name }}
+  version: 1.0.0
+  displayName: ${{ values.name }}
+  description: ${{ values.description }}
+  language: TypeScript
+  projectType: Astro
+  tags:
+    - Astro
+    - TypeScript
+    - Frontend
+parent:
+  id: nodejs
+  registryUrl: 'https://registry.devfile.io'
+components:
+  - name: dev
+    container:
+      image: registry.access.redhat.com/ubi9/nodejs-22:latest
+      endpoints:
+        - name: http-astro
+          targetPort: 4321
+          exposure: public
+          protocol: https
+      memoryLimit: 1Gi
+      mountSources: true
+commands:
+  - id: install
+    exec:
+      component: dev
+      commandLine: npm install
+      workingDir: ${PROJECT_SOURCE}
+      group:
+        kind: build
+        isDefault: false
+  - id: dev
+    exec:
+      component: dev
+      commandLine: npm run dev
+      workingDir: ${PROJECT_SOURCE}
+      group:
+        kind: run
+        isDefault: true
+  - id: build
+    exec:
+      component: dev
+      commandLine: npm run build
+      workingDir: ${PROJECT_SOURCE}
+      group:
+        kind: build
+        isDefault: true

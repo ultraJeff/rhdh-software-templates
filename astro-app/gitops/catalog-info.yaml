@@ -1,0 +1,17 @@
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: ${{ values.name }}-gitops
+  description: GitOps manifests for ${{ values.name }}
+  annotations:
+    backstage.io/source-location: url:https://${{ values.ghHost }}/${{ values.ghOwner }}/${{ values.repoName }}-gitops
+  links:
+    - url: https://${{ values.ghHost }}/${{ values.ghOwner }}/${{ values.repoName }}-gitops
+      title: GitOps Repository
+      icon: github
+spec:
+  type: gitops
+  owner: ${{ values.owner | default("platform-engineering", true) }}
+  lifecycle: experimental
+  dependencyOf:
+    - component:default/${{ values.name }}
