@@ -25,14 +25,6 @@ components:
       memoryLimit: 1Gi
       mountSources: true
 commands:
-  - id: install
-    exec:
-      component: dev
-      commandLine: npm install
-      workingDir: ${PROJECT_SOURCE}
-      group:
-        kind: build
-        isDefault: false
   - id: dev
     exec:
       component: dev
@@ -40,12 +32,4 @@ commands:
       workingDir: ${PROJECT_SOURCE}
       group:
         kind: run
-        isDefault: true
-  - id: build
-    exec:
-      component: dev
-      commandLine: npm run build
-      workingDir: ${PROJECT_SOURCE}
-      group:
-        kind: build
         isDefault: true
