@@ -1,5 +1,5 @@
 apiVersion: backstage.io/v1alpha1
-kind: Resource
+kind: Component
 metadata:
   name: ${{ values.name }}-gitops
   description: GitOps manifests for ${{ values.name }}
@@ -13,5 +13,5 @@ spec:
   type: gitops
   owner: ${{ values.owner | default("platform-engineering", true) }}
   lifecycle: experimental
-  dependencyOf:
+  dependsOn:
     - component:default/${{ values.name }}
