@@ -89,6 +89,8 @@ spec:
       input:
         url: ./content
         targetPath: source
+        copyWithoutTemplating:
+          - '**/*.astro'
         values:
           name: ${{ parameters.name }}
           description: ${{ parameters.description }}

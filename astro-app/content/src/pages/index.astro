@@ -1,11 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import site from '../site.json';
 ---
 
-<Layout title="${{ values.name }}">
+<Layout title={site.name}>
   <main>
-    <h1>${{ values.name }}</h1>
-    <p>${{ values.description }}</p>
+    <h1>{site.name}</h1>
+    <p>{site.description}</p>
     <div class="badges">
       <span class="badge">Astro</span>
       <span class="badge">OpenShift</span>
