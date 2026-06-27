@@ -7,7 +7,7 @@ metadata:
     backstage.io/source-location: url:https://${{ values.ghHost }}/${{ values.ghOwner }}/${{ values.repoName }}
     backstage.io/kubernetes-id: ${{ values.name }}
     backstage.io/kubernetes-namespace: ${{ values.namespace }}
-    janus-idp.io/tekton: ${{ values.name }}
+    tekton.dev/ci-cd: "true"
     argocd/app-selector: app.kubernetes.io/instance=${{ values.name }}
   links:
     - url: https://devspaces.apps.tallgeese.ultra.lab/#https://${{ values.ghHost }}/${{ values.ghOwner }}/${{ values.repoName }}
