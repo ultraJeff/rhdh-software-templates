@@ -47,7 +47,7 @@ spec:
         ghOwner:
           title: GitHub Organization
           type: string
-          default: ultraJeff
+          default: ultraJeffOrg
           ui:help: The GitHub organization or user that will own the repositories
         repoName:
           title: Repository Name
@@ -71,7 +71,7 @@ spec:
         imageOrg:
           title: Image Organization
           type: string
-          default: ultraJeff
+          default: ultraJeffOrg
           ui:help: Organization or user on the registry
         imageName:
           title: Image Name
