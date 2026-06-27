@@ -19,6 +19,7 @@ spec:
       default: ${{ values.image }}:latest
   workspaces:
     - name: source
+    - name: dockerconfig
   tasks:
     - name: clone
       taskRef:
@@ -58,3 +59,5 @@ spec:
       workspaces:
         - name: source
           workspace: source
+        - name: dockerconfig
+          workspace: dockerconfig
