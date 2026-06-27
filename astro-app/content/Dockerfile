@@ -1,7 +1,7 @@
 FROM registry.access.redhat.com/ubi9/nodejs-22:latest AS build
 WORKDIR /opt/app-root/src
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 COPY . .
 RUN npm run build
 

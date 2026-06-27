@@ -22,16 +22,11 @@ spec:
   tasks:
     - name: clone
       taskRef:
-        resolver: cluster
-        params:
-          - name: kind
-            value: ClusterTask
-          - name: name
-            value: git-clone
+        name: git-clone
       params:
-        - name: url
+        - name: URL
           value: $(params.git-url)
-        - name: revision
+        - name: REVISION
           value: $(params.git-revision)
       workspaces:
         - name: output
@@ -47,7 +42,7 @@ spec:
             image: registry.access.redhat.com/ubi9/nodejs-22:latest
             workingDir: $(workspaces.source.path)
             script: |
-              npm ci
+              npm install
               npm run build
       workspaces:
         - name: source
@@ -56,12 +51,7 @@ spec:
     - name: build-image
       runAfter: [build-app]
       taskRef:
-        resolver: cluster
-        params:
-          - name: kind
-            value: ClusterTask
-          - name: name
-            value: buildah
+        name: buildah
       params:
         - name: IMAGE
           value: $(params.image)
