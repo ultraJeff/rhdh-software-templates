@@ -5,6 +5,9 @@ metadata:
   description: GitOps manifests for ${{ values.name }}
   annotations:
     backstage.io/source-location: url:https://${{ values.ghHost }}/${{ values.ghOwner }}/${{ values.repoName }}-gitops
+    backstage.io/kubernetes-id: ${{ values.name }}
+    backstage.io/kubernetes-namespace: ${{ values.namespace }}
+    argocd/app-selector: app.kubernetes.io/instance=${{ values.name }}
   links:
     - url: https://${{ values.ghHost }}/${{ values.ghOwner }}/${{ values.repoName }}-gitops
       title: GitOps Repository
