@@ -71,7 +71,7 @@ spec:
         imageOrg:
           title: Image Organization
           type: string
-          default: ultraJeffOrg
+          default: jefrankl
           ui:help: Organization or user on the registry
         imageName:
           title: Image Name
