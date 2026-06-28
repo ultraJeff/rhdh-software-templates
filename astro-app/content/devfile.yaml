@@ -10,11 +10,8 @@ metadata:
     - Astro
     - TypeScript
     - Frontend
-parent:
-  id: nodejs
-  registryUrl: 'https://registry.devfile.io'
 components:
-  - name: dev
+  - name: tools
     container:
       image: registry.access.redhat.com/ubi9/nodejs-22:latest
       endpoints:
@@ -25,9 +22,25 @@ components:
       memoryLimit: 1Gi
       mountSources: true
 commands:
+  - id: install
+    exec:
+      component: tools
+      commandLine: npm install
+      workingDir: ${PROJECT_SOURCE}
+      group:
+        kind: build
+        isDefault: false
+  - id: build
+    exec:
+      component: tools
+      commandLine: npm run build
+      workingDir: ${PROJECT_SOURCE}
+      group:
+        kind: build
+        isDefault: true
   - id: dev
     exec:
-      component: dev
+      component: tools
       commandLine: npm run dev
       workingDir: ${PROJECT_SOURCE}
       group:
