@@ -13,13 +13,13 @@ metadata:
 components:
   - name: tools
     container:
-      image: registry.access.redhat.com/ubi9/nodejs-22:latest
+      image: registry.redhat.io/devspaces/udi-rhel8:latest
       endpoints:
         - name: http-astro
           targetPort: 4321
           exposure: public
           protocol: https
-      memoryLimit: 1Gi
+      memoryLimit: 2Gi
       mountSources: true
 commands:
   - id: install
