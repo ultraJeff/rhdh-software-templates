@@ -4,3 +4,4 @@ kind: Kustomization
 resources:
   - pipeline.yaml
   - pipelinerun.yaml
+  - quay-external-secret.yaml
