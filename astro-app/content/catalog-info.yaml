@@ -9,6 +9,7 @@ metadata:
     backstage.io/kubernetes-namespace: ${{ values.namespace }}
     janus-idp.io/tekton: ${{ values.name }}
     argocd/app-selector: app.kubernetes.io/instance=${{ values.name }}
+    quay.io/repository-slug: ${{ values.imageOrg }}/${{ values.imageName if values.imageName else values.name }}
   links:
     - url: https://devspaces.apps.tallgeese.ultra.lab/#https://${{ values.ghHost }}/${{ values.ghOwner }}/${{ values.repoName }}
       title: Open in Dev Spaces
