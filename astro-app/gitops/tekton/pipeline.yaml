@@ -36,10 +36,13 @@ spec:
     - name: build-app
       runAfter: [clone]
       taskSpec:
+        metadata: {}
+        spec: null
         workspaces:
           - name: source
         steps:
           - name: npm-install
+            computeResources: {}
             image: registry.access.redhat.com/ubi9/nodejs-22:latest
             workingDir: $(workspaces.source.path)
             script: |
