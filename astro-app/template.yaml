@@ -152,7 +152,7 @@ spec:
       input:
         appName: ${{ parameters.name }}
         argoInstance: argocd
-        projectName: ${{ parameters.name }}
+        projectName: default
         namespace: openshift-gitops
         repoUrl: https://${{ parameters.ghHost }}/${{ parameters.ghOwner }}/${{ (parameters.repoName if parameters.repoName else parameters.name) + '-gitops' }}.git
         path: ./k8s/overlays/development
