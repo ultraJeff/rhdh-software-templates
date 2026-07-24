@@ -1,0 +1,55 @@
+schemaVersion: 2.2.0
+metadata:
+  name: ${{ values.name }}
+  version: 1.0.0
+  displayName: ${{ values.name }}
+  description: ${{ values.description }}
+  language: Java
+  projectType: Quarkus
+  tags:
+    - Quarkus
+    - Java
+    - gRPC
+components:
+  - name: tools
+    container:
+      image: registry.redhat.io/devspaces/udi-rhel8:latest
+      endpoints:
+        - name: http-quarkus
+          targetPort: 8080
+          exposure: public
+          protocol: https
+        - name: grpc
+          targetPort: 9000
+          exposure: internal
+          protocol: https
+      memoryLimit: 4Gi
+      mountSources: true
+      env:
+        - name: JAVA_HOME
+          value: /usr/lib/jvm/java-21
+commands:
+  - id: build
+    exec:
+      component: tools
+      commandLine: mvn package -DskipTests
+      workingDir: ${PROJECT_SOURCE}
+      group:
+        kind: build
+        isDefault: true
+  - id: dev
+    exec:
+      component: tools
+      commandLine: mvn quarkus:dev
+      workingDir: ${PROJECT_SOURCE}
+      group:
+        kind: run
+        isDefault: true
+  - id: test
+    exec:
+      component: tools
+      commandLine: mvn test
+      workingDir: ${PROJECT_SOURCE}
+      group:
+        kind: test
+        isDefault: true

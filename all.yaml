@@ -13,3 +13,4 @@ spec:
     - ./multi-cloud-app/template.yaml
     - ./ec2-instance/template.yaml
     - ./s3-bucket/template.yaml
+    - ./grpc-quarkus/template.yaml
