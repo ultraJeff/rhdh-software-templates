@@ -9,6 +9,7 @@ metadata:
     backstage.io/kubernetes-namespace: ${{ values.namespace }}
     backstage.io/techdocs-ref: dir:.
     janus-idp.io/tekton: ${{ values.name }}
+    github.com/project-slug: ${{ values.ghOwner }}/${{ values.repoName }}
     argocd/app-selector: app.kubernetes.io/instance=${{ values.name }}
     nexus-repository-manager/docker.image-name: ${{ values.imageOrg }}/${{ values.imageName if values.imageName else values.name }}
   links:
