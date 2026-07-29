@@ -1,18 +1,10 @@
-## Stage 1: Build
-FROM registry.access.redhat.com/ubi8/openjdk-21:latest AS build
-USER root
-COPY --chown=185 . /work
-WORKDIR /work
-RUN mvn -B package -DskipTests
-
-## Stage 2: Runtime
 FROM registry.access.redhat.com/ubi8/openjdk-21-runtime:latest
 ENV LANGUAGE='en_US:en'
 
-COPY --from=build --chown=185 /work/target/quarkus-app/lib/ /deployments/lib/
-COPY --from=build --chown=185 /work/target/quarkus-app/*.jar /deployments/
-COPY --from=build --chown=185 /work/target/quarkus-app/app/ /deployments/app/
-COPY --from=build --chown=185 /work/target/quarkus-app/quarkus/ /deployments/quarkus/
+COPY --chown=185 target/quarkus-app/lib/ /deployments/lib/
+COPY --chown=185 target/quarkus-app/*.jar /deployments/
+COPY --chown=185 target/quarkus-app/app/ /deployments/app/
+COPY --chown=185 target/quarkus-app/quarkus/ /deployments/quarkus/
 
 EXPOSE 8080 9000
 USER 185

@@ -64,6 +64,8 @@ spec:
         params:
           - name: IMAGE
             value: $(params.image-base):$(params.revision)
+          - name: TLSVERIFY
+            value: "false"
         workspaces:
           - name: source
             workspace: source
