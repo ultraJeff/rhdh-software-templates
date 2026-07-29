@@ -4,3 +4,4 @@ kind: Kustomization
 resources:
   - nexus-credentials.yaml
   - pac-repository.yaml
+  - pipelines-scc-rolebinding.yaml
