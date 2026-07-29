@@ -2,7 +2,39 @@
 
 Custom software templates for Red Hat Developer Hub. These are registered in the RHDH catalog via the `all.yaml` Location entity.
 
-All templates currently use `debug:log` placeholder steps with TODO comments indicating where real provisioning actions would be wired in.
+## Working Templates
+
+### Astro Application (`astro-app/`)
+
+Scaffolds an Astro JS static site with full CI/CD:
+- Source repo + GitOps repo created on GitHub
+- PaC (Pipelines-as-Code) triggers Tekton PipelineRuns on push
+- ArgoCD Application + AppProject created via Roadie scaffolder plugin
+- Image pushed to Quay.io
+
+### Quarkus gRPC Service (`grpc-quarkus/`)
+
+Scaffolds a Quarkus gRPC microservice with full CI/CD:
+- Source repo + GitOps repo created on GitHub
+- PaC triggers pipeline: git-clone → maven build → buildah → push to Nexus registry → update gitops
+- ArgoCD Application + AppProject created via Roadie scaffolder plugin
+- gRPC reflection enabled for `grpcurl` testing without proto files
+- Image pushed to `registry.ultra.lab` (Nexus Docker hosted)
+
+## ArgoCD Integration Notes
+
+The templates use the Roadie `argocd:create-resources` scaffolder action. Key discoveries:
+
+- **`namespace` parameter** controls `spec.destination.namespace` on the Application AND the AppProject's allowed destinations. Must be set to the app's target namespace (e.g., `${{ parameters.name }}`), NOT `openshift-gitops`.
+- **AppProject `clusterResourceWhitelist`** is not set by the Roadie plugin by default. Configure `argocd.projectSettings.clusterResourceWhitelist` in the RHDH app-config to allow cluster-scoped resources like Namespaces.
+- **AppProject `destinations`** defaults to only the specified namespace. Configure `argocd.projectSettings.destinations` in the RHDH app-config to allow `namespace: '*'`.
+- **`projectName`** must be unique per app. Using `default` fails because the plugin tries to create a project named `default` which already exists.
+- **`CreateNamespace=false`** is hardcoded by the plugin and cannot be changed. Include a Namespace manifest in the gitops repo.
+- **Cluster-scoped resources** (ClusterRoleBinding) should be converted to namespace-scoped RoleBindings where possible to avoid AppProject permission issues.
+
+## Placeholder Templates
+
+The remaining templates use `debug:log` placeholder steps with TODO comments indicating where real provisioning actions would be wired in.
 
 ## Templates
 
