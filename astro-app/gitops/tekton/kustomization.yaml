@@ -3,3 +3,4 @@ kind: Kustomization
 
 resources:
   - quay-external-secret.yaml
+  - pac-repository.yaml
